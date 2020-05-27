@@ -1,9 +1,8 @@
 import requests,os,tqdm
 from bs4 import BeautifulSoup
 
-PATH = 'D:/Manga/'
+PATH = 'D:/Manga/' #Change this to your own Directory
 BASE_URL = "https://m.manganelo.com/" #Change this for Website
-COMIC_BASE_PATH = "/home/taufiq/Desktop/Comic/"
 
 def MakeSoup(url):
     get = requests.get(url)
