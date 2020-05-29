@@ -8,7 +8,7 @@ def MakeSoup(url):
     get = requests.get(url)
     return BeautifulSoup(get.content,"lxml")
 
-def SearchName(query):
+def searchName(query):
     name = query.lower().replace(' ','_') #Change Search Query
     searchQuery = BASE_URL+"search/"+name #Change Search Query
     soup = MakeSoup(searchQuery)
@@ -53,13 +53,15 @@ def makeDir(dir,chap):
             return os.getcwd()
 
 def linkManipulation(url):
-    if ('s7' in url):
-        url.replace('s7','s8')
-    # if (manipulatedUrl[8:10] == "s7" and manipulatedUrl[18:20] == "v7"):
-    #     print("True")
-    #     manipulatedUrl.replace("s7","s8")
-    #     manipulatedUrl.replace("v7","v8")
-    return url
+    if (url[8:10] == "s7" and url[18:20] == "v7"):
+        a = url.replace('s7','s8')
+        b = a.replace('v7','v8')
+    elif(url[8:10] == "s5" and url[18:20] == "v5"):
+        a = url.replace('s5','s8')
+        b = a.replace('v5','v8')
+    else:
+        b = url
+    return b
 
 def singleChapManga(url,dir,chap):
     soup = MakeSoup(url)
@@ -69,11 +71,9 @@ def singleChapManga(url,dir,chap):
     imageLink = []
     for image in special:
         data = image.get('src')
-        if (data[8:10] == "s7" and data[18:20] == "v7"):
-            aa = data.replace('s7','s8')
-            bb = aa.replace('v7','v8')
-            imageLink.append(bb)
-        # imageLink.append(image.get('src'))     
+        freshLink = linkManipulation(data)
+        imageLink.append(freshLink)
+        # imageLink.append(image.get('src'))
     for data in imageLink:
         r = requests.get(data,stream=True)
         file_size = int(r.headers.get('Content-Length'))

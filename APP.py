@@ -1,7 +1,8 @@
-import utils,os
+import os,re
 from PIL import Image
-from tkinter import Entry,Button,Checkbutton,Frame,Tk,Label,Listbox,END,IntVar,messagebox
-from tkinter.ttk import Combobox,Progressbar
+from tkinter import Entry, Button, Checkbutton, Frame, Tk, Label, Listbox, END, IntVar, messagebox
+from tkinter.ttk import Combobox, Progressbar
+from manganelo import searchChap, searchName, singleChapManga
 
 class UI(Frame):
     def __init__(self,parent):
@@ -56,7 +57,7 @@ class UI(Frame):
 
     def SearchManga(self):
         self.sQuery = self.searchEntry.get()
-        self.searchContent = utils.SearchName(self.sQuery)
+        self.searchContent = searchName(self.sQuery)
         self.cbMangaName['values']= list(self.searchContent.keys())
 
     def SearchChapter(self):
@@ -65,20 +66,23 @@ class UI(Frame):
         else:
             self.cbChapList.config(state='readonly')
             self.keyContent = self.cbMangaName.get()
-            self.sMangaCahpter = utils.searchChap(self.searchContent.get(self.keyContent))
+            self.sMangaCahpter = searchChap(self.searchContent.get(self.keyContent))
             self.cbChapList['values'] = list(self.sMangaCahpter.keys())
 
+    def saveFilename(self,name):
+        key = self.chapKey
+        chapName = self.sMangaCahpter.get(key)
+        return re.sub(r'(?u)[^-\w.]', ' ', name)
+    
     def Download(self):
         self.chapKey = self.cbChapList.get()
         self.sChapList = self.sMangaCahpter.get(self.chapKey)
-        print(self.sChapList)
         if self.ALL.get() == 1:
             for chap,link in self.sMangaCahpter.items():
-                utils.singleChapManga(link,self.cbMangaName.get(),chap)
+                singleChapManga(link,self.cbMangaName.get(),self.saveFilename(chap))
             messagebox.showinfo('Information','Your download has been complete')
-
         else:
-            utils.singleChapManga(self.sChapList,self.cbMangaName.get(),self.cbChapList.get())
+            singleChapManga(self.sChapList,self.cbMangaName.get(),self.saveFilename(self.chapKey))
             messagebox.showinfo('Information','Your download has been complete') 
 
 if __name__ == "__main__":
